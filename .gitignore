@@ -1,0 +1,17 @@
+# Build output
+/bin/
+
+# Runtime data (cookies, cache, downloaded receipts). The fixtures used by
+# parser_test.go (data/sample*.txt) are tracked explicitly below.
+/data/*
+!/data/sample*.txt
+
+# Cron secrets — installed into /etc/parec/ by `make install-cron`. The
+# committed templates (parec.cron, parec-monthly.sh, parec.env.example)
+# stay tracked. Runtime log lives at $STATE_DIR/parec.log (default
+# /var/lib/parec/parec.log), outside the repo entirely.
+/.cron/parec.env
+/.cron/parec.env
+
+# IDE
+/.idea/

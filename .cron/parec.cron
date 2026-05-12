@@ -1,0 +1,40 @@
+# /etc/cron.d/parec — monthly Rohlik spend report
+#
+# Install (as root):
+#   install -m 0644 -o root -g root \
+#     /mnt/prog/parec/.cron/parec.cron /etc/cron.d/parec
+#   # cron.d file names must not contain dots; the trailing ".cron"
+#   # extension is dropped on install.
+#
+# What it does:
+#   On the 1st of every month at 07:00 local time, runs the parec
+#   wrapper script as user `llm`. Stdout becomes the email body via
+#   MAILTO; stderr (progress bars, debug noise) is redirected to a
+#   log file inside the repo by the wrapper.
+#
+# Prerequisites on the host (all created/installed by `make install-cron`):
+#   - /usr/local/bin/parec            — built binary
+#   - /usr/local/bin/parec-monthly    — wrapper invoked below
+#   - /etc/parec/parec.env            — credentials (root:$CRON_USER 0640)
+#   - /var/lib/parec/                 — state dir owned by $CRON_USER
+#
+# Also required (NOT installed by make):
+#   - Headless Chrome / Chromium on $PATH so chromedp can drive the login
+#     flow (the package default is Headless=true).
+#   - `msmtp` installed AND ~/.msmtprc (or /etc/msmtprc) configured for
+#     the cron user — Gmail SMTP with an app password works fine. See
+#     .cron/msmtprc.example in the repo. The wrapper composes + sends
+#     the report itself, so MAILTO and a local MTA are not needed.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# MAILTO intentionally unset — delivery is handled by parec-monthly via msmtp.
+MAILTO=""
+
+# The "__CRON_USER__" placeholder below is substituted by `make
+# install-cron` with the value of CRON_USER (defaults to $(USER) — the
+# account that ran make). Hand-installing the file? Replace the
+# placeholder yourself before copying to /etc/cron.d/parec.
+#
+# m h dom mon dow user            command
+0 7 1 * * __CRON_USER__ /usr/local/bin/parec-monthly

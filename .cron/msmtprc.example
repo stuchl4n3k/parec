@@ -1,0 +1,28 @@
+# msmtp configuration template for the parec monthly cron job.
+#
+# Copy to ~/.msmtprc (mode 0600) for the cron user, or to /etc/msmtprc
+# system-wide. Gmail requires an *app password*, NOT your account
+# password — generate one at https://myaccount.google.com/apppasswords
+# (2FA must be enabled first).
+#
+# After installing, test with:
+#     echo "Subject: msmtp test" | msmtp -t your-gmail-address@gmail.com
+
+# Defaults applied to all accounts below.
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        ~/.msmtp.log
+
+account        gmail
+host           smtp.gmail.com
+port           587
+from           your-gmail-address@gmail.com
+user           your-gmail-address@gmail.com
+password       xxxx-xxxx-xxxx-xxxx
+
+# The "account default" line picks gmail unless overridden on the
+# msmtp command line. The parec wrapper does NOT pass `--account`, so
+# this is the account that will be used.
+account default : gmail
